@@ -25,7 +25,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useGetOnePerfume } from '../hooks/useGetOnePerfume';
 import { useDeletePerfume } from '../hooks/useDeletePerfume';
 import { useContext } from 'react';
-import UserContext from '../context/UserContext'
+import { UserContext } from '../context/UserContext';
 
 function Detalle() {
     // Eliminamos el estado y la función setImageError
@@ -123,14 +123,15 @@ function Detalle() {
                         Precio: €{perfume.precio ?? perfume.price}
                     </p>
 
-                    {userLogged ?
-                        <div className="detalle-acciones">
-                            <button
-                                className="detalle-button-comprar"
-                                aria-label={`Añadir ${perfume.nombre ?? perfume.name} al carrito de compras`}
-                            >
-                                Añadir {perfume.nombre ?? perfume.name} al carrito
-                            </button>
+
+                    <div className="detalle-acciones">
+                        <button
+                            className="detalle-button-comprar"
+                            aria-label={`Añadir ${perfume.nombre ?? perfume.name} al carrito de compras`}
+                        >
+                            Añadir {perfume.nombre ?? perfume.name} al carrito
+                        </button>
+                        {userLogged ?
 
                             <button
                                 onClick={handleDelete}
@@ -139,12 +140,13 @@ function Detalle() {
                             >
                                 Eliminar
                             </button>
-                        </div>
+                            :
 
-                        :
+                            <div></div>
+                        }
+                    </div>
 
-                        <div></div>
-                    }
+
                 </div>
 
             </div>
