@@ -9,9 +9,11 @@
 .font-heading-h1 {
     font-family: var(--heading-h1-font-family);
 }
+
 .font-heading-h2 {
     font-family: var(--heading-2-font-family);
 }
+
 .font-textopeque {
     font-family: var(--texto-peque-o-web-font-family);
     font-size: var(--texto-peque-o-web-font-size);
@@ -27,9 +29,11 @@
 .border-primary {
     border-color: var(--color-primary);
 }
+
 .primary-bg {
     background-color: var(--color-primary);
 }
+
 .secondary-bg {
     background-color: var(--secondary);
 }
@@ -39,7 +43,7 @@
 /* -------------------------------------- */
 
 body {
-    background-color: var(--primary); 
+    background-color: var(--primary);
     color: var(--secondary);
 }
 
@@ -54,7 +58,7 @@ body {
 
 .inner-section {
     width: 100%;
-    max-width: 80rem; 
+    max-width: 80rem;
     text-align: center;
 }
 
@@ -71,22 +75,23 @@ body {
 .main-header {
     background-color: black;
     color: white;
-    padding: 1rem; 
+    padding: 1rem;
     display: flex;
-    justify-content: space-between; 
+    justify-content: space-between;
     align-items: center;
-    position: relative; 
+    position: relative;
 }
 
 .header-title {
-    font-size: 1.5rem; 
+    font-size: 1.5rem;
 }
 
 /* Estilos de Navegación */
-.nav-container-movil { 
+.nav-container-movil {
     position: relative;
-    z-index: 100; 
+    z-index: 100;
 }
+
 .burger-button {
     display: block;
     color: white;
@@ -95,43 +100,65 @@ body {
     cursor: pointer;
     font-size: 1.5rem;
 }
+
 .nav-links {
-    display: none; 
+    display: none;
     position: absolute;
     top: 100%;
     right: 0;
     width: 150px;
-    background-color: #333; 
+    background-color: #333;
     flex-direction: column;
     padding: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
+
 .nav-links.nav-mobile-open {
-    display: flex; 
+    display: flex;
 }
 
 /* Estilos de Navegación - ESCRITORIO */
 @media (min-width: 768px) {
     .nav-container-movil {
         position: static;
-        display: flex; 
+        display: flex;
     }
+
     .burger-button {
         display: none;
     }
+
     .nav-links {
-        display: flex; 
-        position: static; 
+        display: flex;
+        position: static;
         width: auto;
         background: none;
         flex-direction: row;
         padding: 0;
         box-shadow: none;
+        align-items: center;
     }
+
     .nav-links a {
         margin-left: 1rem;
         color: white;
         text-decoration: none;
+    }
+
+    .nav-button {
+        margin-left: 1rem;
+        background-color: transparent;
+        color: white;
+        border: 1px solid white;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .nav-button:hover {
+        background-color: white;
+        color: black;
     }
 }
 
@@ -144,7 +171,7 @@ body {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.75rem;
-    padding: 1rem; 
+    padding: 1rem;
     margin: 1.25rem;
     border-radius: 0.5rem;
     box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
@@ -159,7 +186,7 @@ body {
 
 .perfume-imagen-contenedor {
     width: 100%;
-    aspect-ratio: 1 / 1; 
+    aspect-ratio: 1 / 1;
     border-radius: 0.5rem;
     background-color: white;
     overflow: hidden;
@@ -190,7 +217,7 @@ body {
     line-height: 1.4;
     color: var(--color-black);
     margin-top: 0.25rem;
-    flex-grow: 1; 
+    flex-grow: 1;
 }
 
 
@@ -205,27 +232,30 @@ body {
     width: 90%;
     max-width: 1000px;
     margin: 2rem auto;
-    color: black; 
+    color: black;
     /* El fondo viene de .secondary-bg */
 }
 
 /* Layout de Contenido de Detalle */
 .detalle-contenido {
     display: flex;
-    flex-direction: column; /* Columna en móvil */
+    flex-direction: column;
+    /* Columna en móvil */
     gap: 2rem;
     margin-top: 1rem;
 }
 
 @media (min-width: 768px) {
     .detalle-contenido {
-        flex-direction: row; /* Fila en escritorio */
+        flex-direction: row;
+        /* Fila en escritorio */
     }
 }
 
 .detalle-imagen-col {
     flex: 1;
-    min-height: 300px; /* Altura mínima para la figura */
+    min-height: 300px;
+    /* Altura mínima para la figura */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -237,7 +267,7 @@ body {
 .detalle-imagen {
     max-width: 100%;
     max-height: 100%;
-    object-fit: contain; 
+    object-fit: contain;
     width: auto;
     height: auto;
 }
@@ -259,7 +289,8 @@ body {
     color: #000000;
 }
 
-.detalle-categoria, .detalle-descripcion {
+.detalle-categoria,
+.detalle-descripcion {
     font-family: var(--text-normal-font-family);
     line-height: 1.5;
     margin-bottom: 1rem;
@@ -281,7 +312,8 @@ body {
 }
 
 /* BOTONES DE DETALLE */
-.detalle-button-comprar, .detalle-button-regresar {
+.detalle-button-comprar,
+.detalle-button-regresar {
     padding: 0.75rem 1.5rem;
     border: none;
     border-radius: 5px;
@@ -290,20 +322,47 @@ body {
     transition: background-color 0.3s, opacity 0.3s;
     font-family: var(--text-normal-font-family);
 }
+
 .detalle-button-comprar {
     background-color: var(--color-primary);
     color: white;
     margin-top: 1.5rem;
     font-size: 1.1rem;
-    display: block; 
+    display: block;
     width: 100%;
     text-transform: uppercase;
 }
+
 .detalle-button-regresar {
     background-color: #ddd;
     color: var(--color-primary);
     margin-bottom: 1rem;
     display: inline-block;
+}
+
+.detalle-button-eliminar {
+    background-color: #dc2626;
+    /* red-600 */
+    color: white;
+    margin-top: 1.5rem;
+    /* Match margin-top of comprar button */
+    font-size: 1.1rem;
+    width: 100%;
+    text-transform: uppercase;
+    display: block;
+    font-weight: bold;
+    border-radius: 5px;
+}
+
+.detalle-button-eliminar:hover {
+    background-color: #b91c1c;
+    /* red-700 */
+}
+
+.detalle-acciones {
+    display: flex;
+    gap: 1rem;
+    width: 100%;
 }
 
 /* ========================================================= */
@@ -327,13 +386,25 @@ body {
 /* ========================================================= */
 
 .footer-layout {
-    /* Establecer fondo negro y texto blanco */
-    background-color: black;
-    color: white;
-    
-    /* Estilos de layout del footer */
-    padding: 1.5rem 2rem;
-    text-align: center;
-    border-top: 1px solid rgba(255, 255, 255, 0.1); /* Separador sutil */
-    margin-top: 2rem;
+    /* Establecer fondo negro y texto blanco */
+    background-color: black;
+    color: white;
+
+    /* Estilos de layout del footer */
+    padding: 1.5rem 2rem;
+    text-align: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    /* Separador sutil */
+}
+
+/* ========================================================= */
+/* 6. COMPONENTES */
+/* ========================================================= */
+
+.search-bar-container {
+    @apply mb-8 w-full max-w-lg mx-auto;
+}
+
+.search-input {
+    @apply w-full p-3 border-2 border-gray-300 rounded-lg shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out;
 }
