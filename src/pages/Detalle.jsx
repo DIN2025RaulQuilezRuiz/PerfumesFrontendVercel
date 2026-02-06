@@ -23,14 +23,16 @@
  */
 import { useNavigate, useParams } from 'react-router-dom';
 import { useGetOnePerfume } from '../hooks/useGetOnePerfume';
-import { deletePerfume } from '../services/PerfumeService';
 import { useDeletePerfume } from '../hooks/useDeletePerfume';
+import { useContext } from 'react';
+import UserContext from '../context/UserContext'
 
 function Detalle() {
     // Eliminamos el estado y la función setImageError
 
     const { id } = useParams();
     const navigate = useNavigate();
+    const { userLogged, login, logout } = useContext(UserContext)
 
     const { removePerfume } = useDeletePerfume(id)
     const { perfume: perfume, loading, error } = useGetOnePerfume(id)
@@ -121,22 +123,28 @@ function Detalle() {
                         Precio: €{perfume.precio ?? perfume.price}
                     </p>
 
-                    <div className="detalle-acciones">
-                        <button
-                            className="detalle-button-comprar"
-                            aria-label={`Añadir ${perfume.nombre ?? perfume.name} al carrito de compras`}
-                        >
-                            Añadir {perfume.nombre ?? perfume.name} al carrito
-                        </button>
+                    {userLogged ?
+                        <div className="detalle-acciones">
+                            <button
+                                className="detalle-button-comprar"
+                                aria-label={`Añadir ${perfume.nombre ?? perfume.name} al carrito de compras`}
+                            >
+                                Añadir {perfume.nombre ?? perfume.name} al carrito
+                            </button>
 
-                        <button
-                            onClick={handleDelete}
-                            className="detalle-button-eliminar"
-                            aria-label={`Eliminar ${perfume.nombre ?? perfume.name}`}
-                        >
-                            Eliminar
-                        </button>
-                    </div>
+                            <button
+                                onClick={handleDelete}
+                                className="detalle-button-eliminar"
+                                aria-label={`Eliminar ${perfume.nombre ?? perfume.name}`}
+                            >
+                                Eliminar
+                            </button>
+                        </div>
+
+                        :
+
+                        <div></div>
+                    }
                 </div>
 
             </div>
