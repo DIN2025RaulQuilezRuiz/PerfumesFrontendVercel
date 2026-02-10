@@ -30,30 +30,33 @@ import Perfume from "../components/Perfume.jsx"
 import SearchBar from '../components/SearchBar.jsx';
 import { useMemo } from "react";
 import { useState } from "react";
+import useVoiceRecognition from '../hooks/useVoiceRecognition.js';
 
 function Tienda() {
     const [searchTerm, setSearchTerm] = useState("");
 
     const { perfumes: perfumes, loading, error } = useGetAllProducts()
 
+    // Integración de reconocimiento de voz
+    const { isListening, isSupported, startListening } = useVoiceRecognition((text) => {
+        setSearchTerm(text);
+    });
+
     const filteredPerfumes = useMemo(() => {
+    if (!perfumes) return [];
 
-        if (!perfumes) {
-            return []
-        }
+    if (!searchTerm) return perfumes;
 
-        if (!searchTerm) {
-            return perfumes;
-            // Si no hay término, devuelve la lista completa
-        }
+    const lowerCaseSearchTerm = searchTerm.toLowerCase();
 
-        const lowerCaseSearchTerm = searchTerm.toLowerCase();
+    return perfumes.filter((perfume) => {
+        const nombre =
+            perfume.nombre ?? perfume.name ?? "";
 
-        return perfumes.filter((perfume) =>
-            // Filtra por el nombre del perfume
-            perfume.nombre.toLowerCase().includes(lowerCaseSearchTerm)
-        );
-    }, [searchTerm, perfumes]);
+        return nombre.toLowerCase().includes(lowerCaseSearchTerm);
+    });
+}, [searchTerm, perfumes]);
+
 
 
     if (loading) {
@@ -74,11 +77,40 @@ function Tienda() {
                 Listado de disponibles:
             </p>
 
-            <SearchBar
-                searchTerm={searchTerm}
-                onSearchChange={setSearchTerm}
-                placeholder="Buscar perfumes por nombre..."
-            />
+            <div className="flex items-center gap-2 w-full max-w-md mx-auto">
+                <div className="flex-grow">
+                    <SearchBar
+                        searchTerm={searchTerm}
+                        onSearchChange={setSearchTerm}
+                        placeholder="Buscar perfumes por nombre..."
+                    />
+                </div>
+
+                {isSupported && (
+                    <button
+                        onClick={startListening}
+                        disabled={isListening}
+                        className={`p-3 rounded-full transition-colors duration-200 ${isListening
+                            ? 'bg-red-500 hover:bg-red-600 animate-pulse'
+                            : 'bg-blue-500 hover:bg-blue-600'
+                            } text-white shadow-md`}
+                        title="Buscar por voz"
+                        aria-label="Activar búsqueda por voz"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                            className="w-6 h-6"
+                        >
+                            <path d="M8.25 4.5a3.75 3.75 0 117.5 0v8.25a3.75 3.75 0 11-7.5 0V4.5z" />
+                            <path d="M6 10.5a.75.75 0 01.75.75v1.5a5.25 5.25 0 1010.5 0v-1.5a.75.75 0 011.5 0v1.5a6.751 6.751 0 01-6 6.709v2.291h3a.75.75 0 010 1.5h-7.5a.75.75 0 010-1.5h3v-2.291a6.751 6.751 0 01-6-6.709v-1.5A.75.75 0 016 10.5z" />
+                        </svg>
+                    </button>
+                )}
+            </div>
+
+            {isListening && <p className="text-center text-sm text-gray-500 mt-2">Escuchando...</p>}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full mt-8">
 

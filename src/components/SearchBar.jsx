@@ -1,15 +1,6 @@
-/**
- * SearchBar component - A controlled input field for searching
- * @component
- * @param {Object} props - Component props
- * @param {string} props.searchTerm - The current search input value
- * @param {Function} props.onSearchChange - Callback function invoked when the search input changes, receives the new input value
- * @param {string} [props.placeholder="Buscar..."] - Placeholder text displayed in the search input
- * @returns {JSX.Element} A search input field wrapped in a container with accessibility labels
- */
 function SearchBar({ searchTerm, onSearchChange, placeholder = "Buscar..." }) {
     return (
-        <div className="search-bar-container">
+        <div className="w-full">
             <label htmlFor="search-input" className="sr-only">
                 {placeholder}
             </label>
@@ -20,11 +11,11 @@ function SearchBar({ searchTerm, onSearchChange, placeholder = "Buscar..." }) {
                 value={searchTerm}
                 // Llama a la función proporcionada por el padre en cada cambio
                 onChange={(e) => onSearchChange(e.target.value)}
-                className="search-input"
+                className="w-full p-3 border-2 border-gray-300 rounded-lg shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out"
                 aria-label={placeholder}
             />
         </div>
     );
 }
-export default SearchBar;
 
+export default SearchBar;
