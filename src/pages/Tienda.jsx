@@ -28,88 +28,53 @@ import '../assets/index.css'
 import { useGetAllProducts } from '../hooks/useGetAllPerfumes.js';
 import Perfume from "../components/Perfume.jsx"
 import SearchBar from '../components/SearchBar.jsx';
-import { useMemo, useState, useEffect, useRef } from "react";
+import { useMemo, useState, useRef } from "react";
 import useVoiceRecognition from '../hooks/useVoiceRecognition.js';
 
 function Tienda() {
     const [searchTerm, setSearchTerm] = useState("");
+    const { perfumes, loading, error } = useGetAllProducts();
 
-    const { perfumes: perfumes, loading, error } = useGetAllProducts()
-
-    // Integración de reconocimiento de voz
     const { isListening, isSupported, startListening } = useVoiceRecognition((text) => {
         setSearchTerm(text);
     });
 
-    const swipeState = useRef({ startX: 0, startY: 0, isDragging: false });
+    const swipeState = useRef({ startX: 0, startY: 0 });
 
-    const checkSwipe = (endX, endY) => {
-        const diffX = swipeState.current.startX - endX; // Positivo = deslizamiento a la izquierda
-        const diffY = Math.abs(swipeState.current.startY - endY);
+    const handleTouchStart = (e) => {
+        swipeState.current.startX = e.touches[0].clientX;
+        swipeState.current.startY = e.touches[0].clientY;
+    };
 
-        if (diffX >= 80 && diffY <= 60) {
+    const handleTouchEnd = (e) => {
+        const endX = e.changedTouches[0].clientX;
+        const endY = e.changedTouches[0].clientY;
+
+        const diffX = endX - swipeState.current.startX; 
+        const diffY = Math.abs(endY - swipeState.current.startY);
+
+        if (diffX >= 60 && diffY <= 40) {
             if (isSupported && !isListening) {
                 startListening();
             }
         }
     };
 
-    const handleTouchStart = (e) => {
-        swipeState.current.startX = e.changedTouches[0].clientX;
-        swipeState.current.startY = e.changedTouches[0].clientY;
-    };
-
-    const handleTouchEnd = (e) => {
-        checkSwipe(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
-    };
-
-    const handleMouseDown = (e) => {
-        swipeState.current.isDragging = true;
-        swipeState.current.startX = e.clientX;
-        swipeState.current.startY = e.clientY;
-    };
-
-    const handleMouseUp = (e) => {
-        if (swipeState.current.isDragging) {
-            checkSwipe(e.clientX, e.clientY);
-            swipeState.current.isDragging = false;
-        }
-    };
-
     const filteredPerfumes = useMemo(() => {
-    if (!perfumes) return [];
+        if (!perfumes) return [];
+        if (!searchTerm) return perfumes;
+        const lowerCaseSearchTerm = searchTerm.toLowerCase();
+        return perfumes.filter((perfume) => {
+            const nombre = perfume.nombre ?? perfume.name ?? "";
+            return nombre.toLowerCase().includes(lowerCaseSearchTerm);
+        });
+    }, [searchTerm, perfumes]);
 
-    if (!searchTerm) return perfumes;
-
-    const lowerCaseSearchTerm = searchTerm.toLowerCase();
-
-    return perfumes.filter((perfume) => {
-        const nombre =
-            perfume.nombre ?? perfume.name ?? "";
-
-        return nombre.toLowerCase().includes(lowerCaseSearchTerm);
-    });
-}, [searchTerm, perfumes]);
-
-
-
-    if (loading) {
-        return <p>Cargando</p>
-    }
-
-    if (error != null) {
-        return <p>{error}</p>
-    }
+    if (loading) return <p>Cargando</p>;
+    if (error != null) return <p>{error}</p>;
 
     return (
-        <section 
-            aria-labelledby="tienda-title"
-            className="min-h-screen pb-10"
-            onTouchStart={handleTouchStart}
-            onTouchEnd={handleTouchEnd}
-            onMouseDown={handleMouseDown}
-            onMouseUp={handleMouseUp}
-        >
+        <section aria-labelledby="tienda-title" className="min-h-screen pb-10">
             <h1 id="tienda-title" className="contenedor__h1 mt-4">
                 Perfumes
             </h1>
@@ -118,43 +83,54 @@ function Tienda() {
                 Listado de disponibles:
             </p>
 
-            <div className="flex items-center gap-2 w-full max-w-md mx-auto">
-                <div className="flex-grow">
-                    <SearchBar
-                        searchTerm={searchTerm}
-                        onSearchChange={setSearchTerm}
-                        placeholder="Buscar perfumes por nombre..."
-                    />
+            <div className="w-full max-w-md mx-auto">
+                <div 
+                    onTouchStart={handleTouchStart}
+                    onTouchEnd={handleTouchEnd}
+                    className="flex items-center gap-2 bg-white rounded-lg shadow-sm p-1 touch-pan-y"
+                    title="Desliza a la derecha dentro de esta zona para buscar por voz"
+                >
+                    <div className="flex-grow">
+                        <SearchBar
+                            searchTerm={searchTerm}
+                            onSearchChange={setSearchTerm}
+                            placeholder="Buscar perfumes por nombre..."
+                        />
+                    </div>
+
+                    {isSupported && (
+                        <button
+                            onClick={startListening}
+                            disabled={isListening}
+                            className={`p-3 rounded-full transition-colors duration-200 ${isListening
+                                ? 'bg-red-500 hover:bg-red-600 animate-pulse'
+                                : 'bg-blue-500 hover:bg-blue-600'
+                                } text-white shadow-md`}
+                            aria-label="Activar búsqueda por voz"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
+                                <path d="M8.25 4.5a3.75 3.75 0 117.5 0v8.25a3.75 3.75 0 11-7.5 0V4.5z" />
+                                <path d="M6 10.5a.75.75 0 01.75.75v1.5a5.25 5.25 0 1010.5 0v-1.5a.75.75 0 011.5 0v1.5a6.751 6.751 0 01-6 6.709v2.291h3a.75.75 0 010 1.5h-7.5a.75.75 0 010-1.5h3v-2.291a6.751 6.751 0 01-6-6.709v-1.5A.75.75 0 016 10.5z" />
+                            </svg>
+                        </button>
+                    )}
                 </div>
 
-                {isSupported && (
-                    <button
-                        onClick={startListening}
-                        disabled={isListening}
-                        className={`p-3 rounded-full transition-colors duration-200 ${isListening
-                            ? 'bg-red-500 hover:bg-red-600 animate-pulse'
-                            : 'bg-blue-500 hover:bg-blue-600'
-                            } text-white shadow-md`}
-                        title="Buscar por voz"
-                        aria-label="Activar búsqueda por voz"
-                    >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 24 24"
-                            fill="currentColor"
-                            className="w-6 h-6"
-                        >
-                            <path d="M8.25 4.5a3.75 3.75 0 117.5 0v8.25a3.75 3.75 0 11-7.5 0V4.5z" />
-                            <path d="M6 10.5a.75.75 0 01.75.75v1.5a5.25 5.25 0 1010.5 0v-1.5a.75.75 0 011.5 0v1.5a6.751 6.751 0 01-6 6.709v2.291h3a.75.75 0 010 1.5h-7.5a.75.75 0 010-1.5h3v-2.291a6.751 6.751 0 01-6-6.709v-1.5A.75.75 0 016 10.5z" />
-                        </svg>
-                    </button>
+                    
+                    {isSupported && !isListening && (
+                        <p className="text-center text-xs text-gray-400 mt-1.5 animate-fade-in md:hidden">
+                            Desliza <span className="font-bold text-blue-500">→</span> sobre el buscador para buscar por voz
+                        </p>
+                    )}
+
+                {isListening && (
+                    <p className="text-center text-sm font-medium text-red-500 mt-1.5 animate-pulse">
+                        Listening... ¡Habla ahora!
+                    </p>
                 )}
             </div>
 
-            {isListening && <p className="text-center text-sm text-gray-500 mt-2">Escuchando...</p>}
-
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full mt-8">
-
                 {filteredPerfumes.length > 0 ? (
                     filteredPerfumes.map((perfume, idx) => (
                         <Perfume
@@ -167,14 +143,10 @@ function Tienda() {
                         </Perfume>
                     ))
                 ) : (
-                    // Mensaje si no hay resultados
                     <p className="col-span-full text-center text-gray-500 p-4">
-                        No se encontraron perfumes con el término
-                        "{searchTerm}".
+                        No se encontraron perfumes con el término "{searchTerm}".
                     </p>
-                )
-                }
-
+                )}
             </div>
         </section>
     )
