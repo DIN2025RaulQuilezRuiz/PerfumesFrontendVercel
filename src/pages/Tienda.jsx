@@ -28,8 +28,7 @@ import '../assets/index.css'
 import { useGetAllProducts } from '../hooks/useGetAllPerfumes.js';
 import Perfume from "../components/Perfume.jsx"
 import SearchBar from '../components/SearchBar.jsx';
-import { useMemo } from "react";
-import { useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import useVoiceRecognition from '../hooks/useVoiceRecognition.js';
 
 function Tienda() {
@@ -41,6 +40,75 @@ function Tienda() {
     const { isListening, isSupported, startListening } = useVoiceRecognition((text) => {
         setSearchTerm(text);
     });
+
+    // Detectar arrastre (swipe) desde el borde derecho para activar el micrófono
+    useEffect(() => {
+        let startX = 0;
+        let endX = 0;
+        let isDragging = false;
+
+        const checkSwipe = () => {
+            const screenWidth = window.innerWidth;
+            const EDGE_THRESHOLD = 150; // Píxeles desde el borde derecho
+            const SWIPE_THRESHOLD = 60; // Distancia mínima
+
+            if (screenWidth - startX <= EDGE_THRESHOLD) {
+                if (startX - endX >= SWIPE_THRESHOLD) {
+                    if (isSupported && !isListening) {
+                        startListening();
+                    }
+                }
+            }
+        };
+
+        // --- Eventos Táctiles (Móvil) ---
+        const handleTouchStart = (e) => {
+            startX = e.changedTouches[0].clientX;
+            endX = startX;
+        };
+        const handleTouchMove = (e) => {
+            endX = e.changedTouches[0].clientX;
+        };
+        const handleTouchEnd = () => {
+            checkSwipe();
+        };
+
+        // --- Eventos de Ratón (Escritorio) ---
+        const handleMouseDown = (e) => {
+            isDragging = true;
+            startX = e.clientX;
+            endX = startX;
+        };
+        const handleMouseMove = (e) => {
+            if (isDragging) {
+                endX = e.clientX;
+            }
+        };
+        const handleMouseUp = () => {
+            if (isDragging) {
+                checkSwipe();
+                isDragging = false;
+            }
+        };
+
+        window.addEventListener('touchstart', handleTouchStart);
+        window.addEventListener('touchmove', handleTouchMove);
+        window.addEventListener('touchend', handleTouchEnd);
+
+        window.addEventListener('mousedown', handleMouseDown);
+        window.addEventListener('mousemove', handleMouseMove);
+        window.addEventListener('mouseup', handleMouseUp);
+
+        return () => {
+            window.removeEventListener('touchstart', handleTouchStart);
+            window.removeEventListener('touchmove', handleTouchMove);
+            window.removeEventListener('touchend', handleTouchEnd);
+
+            window.removeEventListener('mousedown', handleMouseDown);
+            window.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('mouseup', handleMouseUp);
+        };
+    }, [isSupported, isListening, startListening]);
 
     const filteredPerfumes = useMemo(() => {
     if (!perfumes) return [];
